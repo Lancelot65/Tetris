@@ -24,6 +24,16 @@ bricks = {
     'Tétrimino S': [[0, 7, 7], [7, 7, 0]],
 }
 
+def rectangle(y1, x1, height, width):
+    mvhline(y1, x1, 0, width)
+    mvhline(y1 + height, x1, 0, width)
+    mvvline(y1, x1, 0, height)
+    mvvline(y1, x1+width, 0, height)
+    mvaddch(y1, x1, ACS_ULCORNER)
+    mvaddch(y1+height, x1, ACS_LLCORNER)
+    mvaddch(y1, x1+width, ACS_URCORNER)
+    mvaddch(y1+height, x1+width, ACS_LRCORNER)
+
 loser_text = r"""
   _                         
  | |                        
@@ -38,9 +48,11 @@ loser_text = r"""
 class Tetris:
     def __init__(self) -> None:
         self.grille = [[0 for _ in range(10)] for _ in range(20)]
+        self.next_block = bricks[choice(list(bricks.keys()))]
         self.block = None
         self.pos = None
         self.run = True
+        self.score = 0
 
     def print(self):
         for row in self.grille: 
@@ -60,11 +72,12 @@ class Tetris:
             for j in range(len(self.grille[i])):
                 obj = self.grille[i][j]
                 if obj != 0:
-                    # attron(COLOR_PAIR(1))
-                    mvaddch(i, j, str(obj))
-                    # attroff(COLOR_PAIR(1))
+                    attron(COLOR_PAIR(obj))
+                    mvaddch(i + 2, j + 1, str(obj))
+                    attroff(COLOR_PAIR(obj))
                 else:
-                    mvaddch(i, j, ' ')
+                    mvaddch(i + 2, j + 1, ' ')
+        rectangle(1, 0, len(self.grille) + 1, len(self.grille[0]) + 1)
 
     def collision(self, position, forme):
         for y in range(len(forme)):
@@ -98,11 +111,34 @@ class Tetris:
 
     def add_block(self):
         self.pos = [0, 3]
-        self.block = bricks[choice(list(bricks.keys()))]
+        self.block = self.next_block
+        self.next_block = bricks[choice(list(bricks.keys()))]
         if not self.collision(self.pos, self.block):
             self.add_forme(self.pos, self.block)
+            self.score +=10
         else:
             self.run = False
+            
+    # def pos_possible_la_plus_bas(self):
+    #     if self.block is not None:
+    #         temp_pos = self.pos.copy()
+    #         self.del_forme(self.pos, self.block)
+    #         while True:
+    #             if temp_pos[0] > len(self.grille) - 3:
+    #                 break
+    #             if not self.collision(temp_pos, self.block):
+    #                 temp_pos[0] += 1
+    #             else:
+    #                 break
+    #         self.add_forme(self.pos, self.block)
+    #         for i in range(len(self.block)):
+    #             for j in range(len(self.block[i])):
+    #                 obj = self.block[i][j]
+    #                 if obj != 0:
+    #                     mvaddch(i + 2 + temp_pos[0], j + 1 + temp_pos[1], '#')
+    #                 else:
+    #                     mvaddch(i + 2 + temp_pos[0], j + 1 + temp_pos[1], ' ')
+            
 
     def update(self):
         if self.block is not None:
@@ -118,6 +154,7 @@ class Tetris:
                 self.block = None
                 self.check_full_line()
                 self.add_block()
+
         else:
             self.check_full_line()
             self.add_block()
@@ -131,6 +168,18 @@ class Tetris:
                     count +=1
             if count == 0:
                 full_lines.append(i)
+        a = len(full_lines)
+        match a:
+            case 1:
+                self.score += 40
+            case 2:
+                self.score += 100
+            case 3:
+                self.score += 300
+            case 4:
+                self.score += 1200
+            case _:
+                pass
 
         for line in full_lines:
             for j in range(line, 0, -1):
@@ -185,6 +234,20 @@ class Tetris:
                 rotated[j][len(forme) - 1 - i] = forme[i][j]
         return rotated
 
+    def draw_next_bloc(self, position, block):
+        """
+        (y, x)
+        """
+        for i in range(len(block)):
+            for j in range(len(block[i])):
+                obj = block[i][j]
+                if obj != 0:
+                    attron(COLOR_PAIR(obj))
+                    mvaddch(i + position[1], j + position[0], str(obj))
+                    attroff(COLOR_PAIR(obj))
+                else:
+                    mvaddch(i + position[1], j + position[0], ' ')
+
     def loop(self):
         stdscr = initscr()
         noecho()
@@ -214,20 +277,37 @@ class Tetris:
                 elif k == KEY_DOWN:
                     self.move_down()
             clear()
+            mvaddstr(1, 13, "NEXT")
+            rectangle(2, 12, 3, 5)
+            self.draw_next_bloc((13, 3), self.next_block)
+            mvaddstr(6, 13, "SCORE")
+            mvaddstr(7, 13, str(self.score))
             self.new_print()
+            # self.pos_possible_la_plus_bas()
             refresh()
             
 
         clear()
         move(0, 0)
+        attron(A_BOLD)
         addstr(loser_text)
+        attroff(A_BOLD)
+        attron(A_DIM)
+        addstr("        press any key")
+        attroff(A_DIM)
         refresh()
         getch()
         clear()
         refresh()
         endwin()
-        print("Be seeing you...")
+        print("See you soon")
 
 if __name__ == "__main__":
     t = Tetris()
     t.loop()
+    
+"""
+a rajouter : 
+si on appuie sur espace ça va direct tout en bas
+aussi prechote la prochaine position
+"""
