@@ -4,14 +4,24 @@ from random import choice
 from unicurses import *
 import msvcrt
 
+colors = {
+    1 : COLOR_CYAN,
+    2 : COLOR_YELLOW,
+    3 : COLOR_MAGENTA,
+    4 : COLOR_WHITE,
+    5 : COLOR_BLUE,
+    6 : COLOR_RED,
+    7 : COLOR_GREEN
+}
+
 bricks = {
     'Tétrimino I': [[1, 1, 1, 1]], 
-    'Tétrimino O': [[1, 1], [1, 1]],
-    'Tétrimino T': [[1, 1, 1], [0, 1, 0]],
-    'Tétrimino L': [[1, 1, 1], [1, 0, 0]],
-    'Tétrimino J': [[1, 1, 1], [0, 0, 1]],
-    'Tétrimino Z': [[1, 1, 0], [0, 1, 1]],
-    'Tétrimino S': [[0, 1, 1], [1, 1, 0]],
+    'Tétrimino O': [[2, 2], [2, 2]],
+    'Tétrimino T': [[3, 3, 3], [0, 3, 0]],
+    'Tétrimino L': [[4, 4, 4], [4, 0, 0]],
+    'Tétrimino J': [[5, 5, 5], [0, 0, 5]],
+    'Tétrimino Z': [[6, 6, 0], [0, 6, 6]],
+    'Tétrimino S': [[0, 7, 7], [7, 7, 0]],
 }
 
 loser_text = r"""
@@ -43,40 +53,48 @@ class Tetris:
             print(']')
         print('\n')
 
+    
+    
     def new_print(self):
         for i in range(len(self.grille)):
             for j in range(len(self.grille[i])):
                 obj = self.grille[i][j]
-                if obj == 1:
-                    attron(COLOR_PAIR(1))
-                    mvaddch(i, j, ' ')
-                    attroff(COLOR_PAIR(1))
+                if obj != 0:
+                    # attron(COLOR_PAIR(1))
+                    mvaddch(i, j, str(obj))
+                    # attroff(COLOR_PAIR(1))
                 else:
                     mvaddch(i, j, ' ')
 
     def collision(self, position, forme):
         for y in range(len(forme)):
             for x in range(len(forme[y])):
-                if self.grille[position[0] + y][position[1] + x] == 1:
-                    if forme[y][x] == 1:
+                if self.grille[position[0] + y][position[1] + x] != 0:
+                    if forme[y][x] != 0:
                         return True
         return False
 
     def del_forme(self, position, forme):
         for y in range(len(forme)):
             for x in range(len(forme[y])):
-                if forme[y][x] == 1:
+                if forme[y][x] != 0:
                     index_y = position[0] + y
                     index_x = position[1] + x
                     self.grille[index_y][index_x] = 0
 
     def add_forme(self, position, forme):
+        color = None
+        for y in forme:
+            for x in y:
+                if x!=0:
+                    color = x
+                    break
         for y in range(len(forme)):
             for x in range(len(forme[y])):
-                if forme[y][x] == 1:
+                if forme[y][x] != 0:
                     index_y = position[0] + y
                     index_x = position[1] + x
-                    self.grille[index_y][index_x] = 1
+                    self.grille[index_y][index_x] = color
 
     def add_block(self):
         self.pos = [0, 3]
@@ -101,12 +119,17 @@ class Tetris:
                 self.check_full_line()
                 self.add_block()
         else:
+            self.check_full_line()
             self.add_block()
 
     def check_full_line(self):
         full_lines = []
         for i in range(len(self.grille)):
-            if sum(self.grille[i]) == len(self.grille[0]):
+            count = 0
+            for value in self.grille[i]:
+                if value == 0:
+                    count +=1
+            if count == 0:
                 full_lines.append(i)
 
         for line in full_lines:
@@ -141,8 +164,8 @@ class Tetris:
                 self.add_forme(self.pos, self.block)
             else:
                 self.add_forme(self.pos, self.block)
-                self.block = None
                 self.check_full_line()
+                self.block = None
                 self.add_block()
 
     def rotate(self):
@@ -170,7 +193,8 @@ class Tetris:
         keypad(stdscr, True)
         start_color()
         init_pair(1, COLOR_RED, COLOR_RED)
-
+        for key in colors.keys():
+            init_pair(key, colors[key], colors[key])
         
         
         previous_time = time()
