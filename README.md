@@ -11,9 +11,10 @@ This project is a simple implementation of the famous game TETRIS that runs in t
 - [Next Steps](#next-steps)
 - [Contributions](#contributions)
 
+<p align="center">
+  <img src="https://github.com/Lancelot65/Tetris/tree/main/video/video_tetris.gif?raw=true" alt="Tetris Example"/>
+</p>
 
-
-[![Watch the video](https://raw.githubusercontent.com/Lancelot65/Tetris/refs/heads/main/video/image.png)](https://raw.githubusercontent.com/Lancelot65/Tetris/refs/heads/main/video/video_tetris.mp4)
 
 ## Installation
 
