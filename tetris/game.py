@@ -25,7 +25,7 @@ class Tetris:
             for x, value in enumerate(row):
                 if value:
                     attron(COLOR_PAIR(value))
-                    mvaddch(y + 2, x + 1, " ")
+                    mvaddch(y + 2, x + 1, "■")
                     attroff(COLOR_PAIR(value))
         rectangle(1, 0, len(self.grille) + 1, len(self.grille[0]) + 1)
 
@@ -202,7 +202,7 @@ class Tetris:
         start_color()
         init_pair(1, COLOR_RED, COLOR_RED)
         for key in colors.keys():
-            init_pair(key, colors[key], colors[key])
+            init_pair(key, colors[key], 0)
 
     def close_display(self):
         clear()
