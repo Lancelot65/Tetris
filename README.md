@@ -23,7 +23,7 @@ To install this project, you first need to clone the repository:
 #### Note: I am not sure if this program works on Linux, as I developed it on Windows.
 
 ```bash
-git clone https://github.com/username/tetris-python.git
+git clone https://github.com/Lancelot65/Tetris.git
 cd tetris-python
 ```
 
