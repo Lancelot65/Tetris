@@ -12,7 +12,7 @@ This project is a simple implementation of the famous game TETRIS that runs in t
 - [Contributions](#contributions)
 
 <p align="center">
-  <img src="https://github.com/Lancelot65/Tetris/tree/main/video/video_tetris.gif?raw=true" alt="Tetris Example"/>
+  <img src="https://github.com/Lancelot65/Tetris/blob/main/video/video_tetris.gif?raw=true" alt="Tetris Example"/>
 </p>
 
 
