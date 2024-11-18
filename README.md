@@ -30,7 +30,7 @@ cd tetris-python
 Then, install the Uni-Curses dependency:
 
 ```bash
-pip install windows-curses  # For Windows
+pip install Uni-Curses  # For Windows
 # or
 pip install curses          # For Linux/Mac
 ```
